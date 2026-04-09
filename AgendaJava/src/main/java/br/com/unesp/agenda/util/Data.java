@@ -43,7 +43,7 @@ public class Data {
         if (!(mes >= 1 && mes <= 12))
             throw new IllegalArgumentException("Mês inválido!");
 
-        if (!isDataValida(this.dia, mes, this.dia))
+        if (!isDataValida(this.dia, mes, this.ano))
             throw new IllegalArgumentException("Mês inválido para o dia/ano atual");
 
         this.mes = mes;
@@ -82,5 +82,39 @@ public class Data {
     public static boolean isDataValida(int d, int m, int a) {
         if (a < 1 || m < 1 || m > 12) return false;
         return (d >= 1) && (d <= diasNoMes(m, a));
+    }
+
+    @Override
+    public String toString() {
+        return this.dia + "/" + this.mes + "/" + this.ano;
+    }
+
+    public Data adicionarDias(int qtdDias) {
+        if (isDataValida(this.dia + qtdDias, this.mes, this.dia))
+            return new Data(this.dia + qtdDias, this.mes, this.dia);
+
+        int novoDia = this.dia + qtdDias;
+        int novoMes = this.mes;
+        int novoAno = this.ano;
+
+        while (novoDia > diasNoMes(novoMes, novoAno)) {
+            novoDia -= diasNoMes(novoMes, novoAno);
+            novoMes++;
+            if (novoMes > 12) {
+                novoMes = 1;
+                novoAno++;
+            }
+        }
+
+        while (novoDia < 0) {
+            novoMes--;
+            if (novoMes < 1) {
+                novoMes = 12;
+                novoAno--;
+            }
+            novoDia += diasNoMes(novoMes, novoAno);
+        }
+
+        return new Data(novoDia, novoMes, novoAno);
     }
 }

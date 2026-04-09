@@ -1,4 +1,4 @@
-package br.com.unesp.agenda.util;
+package br.com.unesp.agenda.core;
 
 public class Data {
     private int dia;
@@ -90,8 +90,8 @@ public class Data {
     }
 
     public Data adicionarDias(int qtdDias) {
-        if (isDataValida(this.dia + qtdDias, this.mes, this.dia))
-            return new Data(this.dia + qtdDias, this.mes, this.dia);
+        if (isDataValida(this.dia + qtdDias, this.mes, this.ano))
+            return new Data(this.dia + qtdDias, this.mes, this.ano);
 
         int novoDia = this.dia + qtdDias;
         int novoMes = this.mes;
@@ -116,5 +116,60 @@ public class Data {
         }
 
         return new Data(novoDia, novoMes, novoAno);
+    }
+
+    public int calcularDiasAbsolutos() {
+        int totalDias = this.dia;
+        for (int m=1; m<this.mes; m++)
+            totalDias += diasNoMes(m, this.ano);
+        
+        for (int a=0; a<this.ano; a++)
+            totalDias += isBissexto(a) ? 366 : 365;
+        return totalDias;
+    }
+
+    public int diasEntre(Data dtSecundaria) {
+        int diasDataAtual = this.calcularDiasAbsolutos();
+        int diasOutraData = dtSecundaria.calcularDiasAbsolutos();
+        return Math.abs(diasOutraData - diasDataAtual) + 1;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        Data outraData = (Data) obj;
+        return this.dia == outraData.dia && this.mes == outraData.mes && this.ano == outraData.ano;
+    }
+
+    /***
+     * Função para comparar duas datas de forma relacional.
+     * Retorna 0 para datas iguais
+     * Retorna -1 quando a data do parâmetro é maior
+     * Retorna 1 quando a data da instância é maior
+     * @param rData Data para comparar
+     * @return Resultado da comparação
+     */
+    public int compare(Data rData) {
+        // Comparando anos
+        if (this.ano > rData.ano)
+            return 1;
+        if (this.ano < rData.ano)
+            return -1;
+
+        // Comparando meses
+        if (this.mes > rData.mes)
+            return 1;
+        if (this.mes < rData.mes)
+            return -1;
+
+        // Comparando dias
+        if (this.dia > rData.dia)
+            return 1;
+        if (this.dia < rData.dia)
+            return -1;
+
+        return 0;
     }
 }
